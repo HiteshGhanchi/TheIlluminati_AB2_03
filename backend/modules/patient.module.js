@@ -47,8 +47,7 @@ const patientSchema = new mongoose.Schema({
     default: [],
   },
   terminal_illness: {
-    type: String, 
-    default: "",
+    type: [String], 
   },
   blood_group: {
     type: String,
