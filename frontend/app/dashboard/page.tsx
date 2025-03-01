@@ -2,7 +2,7 @@
 
 import { use, useState } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
-
+import axios from "axios";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,24 +25,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation"
+import { log } from "node:console";
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
 
   //Add Patient use states
-  const [aadhaar_id , setAadhaar] = useState("")
+  const [_id , setAadhaar] = useState("")
   const [name , setName] = useState("")
   const [phone , setPhone] = useState("")
   const [email , setEmail] = useState("")
   const [age , setAge] = useState(0)
-  const [sex , setSex] = useState("")
-  const [allergy1 , setAllergy1] = useState("")
-  const [allergy2 , setAllergy2] = useState("")
-  const [allergy3 , setAllergy3] = useState("")
+  const [sex , setSex] = useState("Male")
   const [height , setHeight] = useState(0)
   const [weight , setWeight] = useState(0)
-  const [password , setPassword] = useState("")
+  // const [password , setPassword] = useState("")
+  const [bmi, setBmi] = useState("");
+  const [allergies, setAllergies] = useState(["", "", ""]); // Three allergy fields
 
   const notifications = [
     { type: "New", message: "New research paper on diabetes treatment" },
@@ -65,11 +65,8 @@ export default function DashboardPage() {
   const handlePatientClick = (patientId: string) => {
     router.push(`/patient/${patientId}`)
   }
-  const [height, setHeight] = useState(""); // in cm
-  const [weight, setWeight] = useState(""); // in kg
-  const [bmi, setBmi] = useState("");
-
-  const [allergies, setAllergies] = useState(["", "", ""]); // Three allergy fields
+  // const [height, setHeight] = useState(""); // in cm
+  // const [weight, setWeight] = useState(""); // in kg
 
   // Calculate BMI when height or weight changes
   const calculateBMI = (h, w) => {
@@ -81,6 +78,30 @@ export default function DashboardPage() {
       setBmi("");
     }
   };
+
+  const handleSubmit = async (e) => {
+    console.log("Submitted");
+    
+    try{
+      const res = await axios.post(`https://localhost:5001/api/patient/`,{
+        _id , 
+        name,
+        phone,
+        email,
+        age,
+        sex,
+        height,
+        weight,
+        bmi : calculateBMI(height , weight),
+        allergies 
+      })
+
+      console.log(res);
+      
+    }catch(e){
+      console.log(e);
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -196,7 +217,7 @@ export default function DashboardPage() {
               className="col-span-3" 
               value={height}
               onChange={(e) => {
-                setHeight(e.target.value);
+                setHeight(Number(e.target.value));
                 calculateBMI(e.target.value, weight);
               }}
             />
@@ -210,7 +231,7 @@ export default function DashboardPage() {
               className="col-span-3" 
               value={weight}
               onChange={(e) => {
-                setWeight(e.target.value);
+                setWeight(Number(e.target.value));
                 calculateBMI(height, e.target.value);
               }}
             />
@@ -248,7 +269,7 @@ export default function DashboardPage() {
           </div>
 
               </div>
-              <Button onSubmit={() =>{}} type="submit">Add Patient</Button>
+              <Button onSubmit={handleSubmit} type="submit">Add Patient</Button>
             </DialogContent>
           </Dialog>
         </div>
