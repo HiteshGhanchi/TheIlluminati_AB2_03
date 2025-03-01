@@ -1,8 +1,10 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { MessageSquare, Download, Mail } from "lucide-react"
+import { MessageSquare, Download, Mail, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,6 +12,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 export default function PatientProfilePage() {
   const { id } = useParams()
@@ -46,7 +51,7 @@ export default function PatientProfilePage() {
     { id: "C003", diagnosis: "Diabetes Management", lastUpdate: "2023-06-01", status: "Ongoing" },
   ]
 
-  const prescriptions = [
+  const [prescriptions, setPrescriptions] = useState([
     { id: "P001", date: "2023-05-15", medicines: "Oseltamivir", dosage: "75mg twice daily", notes: "Take with food" },
     {
       id: "P002",
@@ -56,7 +61,21 @@ export default function PatientProfilePage() {
       notes: "Monitor blood pressure",
     },
     { id: "P003", date: "2023-06-01", medicines: "Metformin", dosage: "500mg twice daily", notes: "Take with meals" },
-  ]
+  ])
+
+  const [newPrescription, setNewPrescription] = useState({
+    date: "",
+    medicines: "",
+    dosage: "",
+    notes: "",
+  })
+
+  const handleAddPrescription = (e: React.FormEvent) => {
+    e.preventDefault()
+    const newId = `P${String(prescriptions.length + 1).padStart(3, "0")}`
+    setPrescriptions([...prescriptions, { id: newId, ...newPrescription }])
+    setNewPrescription({ date: "", medicines: "", dosage: "", notes: "" })
+  }
 
   const handleOpenChat = () => {
     router.push(`/patient/${id}/chat`)
@@ -68,7 +87,10 @@ export default function PatientProfilePage() {
       <main className="flex-1 overflow-y-auto">
         <header className="bg-white shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
-            <h1 className="text-2xl font-semibold">Patient Profile</h1>
+            <div className="flex items-center space-x-4">
+              <h1 className="text-2xl font-bold text-primary">DocGPT</h1>
+              <span className="text-xl font-semibold">Patient Profile</span>
+            </div>
             <Avatar>
               <AvatarImage src="/placeholder.svg" alt="Doctor" />
               <AvatarFallback>DR</AvatarFallback>
@@ -186,8 +208,60 @@ export default function PatientProfilePage() {
             </TabsContent>
             <TabsContent value="prescriptions" className="space-y-4">
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Prescription History</CardTitle>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Prescription
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add New Prescription</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleAddPrescription} className="space-y-4">
+                        <div>
+                          <Label htmlFor="date">Date</Label>
+                          <Input
+                            id="date"
+                            type="date"
+                            value={newPrescription.date}
+                            onChange={(e) => setNewPrescription({ ...newPrescription, date: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="medicines">Medicines</Label>
+                          <Input
+                            id="medicines"
+                            value={newPrescription.medicines}
+                            onChange={(e) => setNewPrescription({ ...newPrescription, medicines: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="dosage">Dosage</Label>
+                          <Input
+                            id="dosage"
+                            value={newPrescription.dosage}
+                            onChange={(e) => setNewPrescription({ ...newPrescription, dosage: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="notes">Notes</Label>
+                          <Input
+                            id="notes"
+                            value={newPrescription.notes}
+                            onChange={(e) => setNewPrescription({ ...newPrescription, notes: e.target.value })}
+                          />
+                        </div>
+                        <Button type="submit">Add Prescription</Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </CardHeader>
                 <CardContent>
                   <Table>
