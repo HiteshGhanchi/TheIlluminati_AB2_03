@@ -1,24 +1,45 @@
 "use client"
 
 import type React from "react"
-
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Lock, Mail } from "lucide-react"
-
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [email , setEmail] = useState("")
+  const [password , setPassword] = useState("")
+  
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically handle authentication
-    // For now, we'll just navigate to the dashboard
-    router.push("/dashboard")
-  }
+  const handleSignIn = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+
+      const res = await axios.post(
+        `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/doctor/login`,
+        { email, password }
+      );
+      console.log(res)
+      const doctor_id = res?.data?.data?._id; 
+  
+      if (doctor_id) {
+        localStorage.setItem("doctor_id", doctor_id); // Store in localStorage
+        console.log("Doctor ID stored:", doctor_id);
+      } else {
+        console.error("Doctor ID not found in response:", res.data);
+      }
+  
+      router.push("/dashboard"); // Redirect to dashboard
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
+  
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-white">
@@ -44,6 +65,8 @@ export default function LoginPage() {
                 autoComplete="email"
                 autoCorrect="off"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -53,7 +76,7 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required  value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
             <Button type="submit" className="w-full">
               Sign In
