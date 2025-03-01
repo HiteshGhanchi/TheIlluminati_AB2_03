@@ -53,9 +53,9 @@ export default function HealthcareLanding() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="hidden md:flex">
+            {/* <Button variant="outline" className="hidden md:flex">
               Contact
-            </Button>
+            </Button> */}
             <Link href="/login">
               <Button>
                 Login

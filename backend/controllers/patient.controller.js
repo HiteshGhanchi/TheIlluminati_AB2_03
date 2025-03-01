@@ -24,7 +24,8 @@ const getPatient = async (req , res) => {
 const addPatient = async (req , res) => {
     try{
         const {id , ...rest} = req.body;
-
+        console.log("In addPatient!!");
+        
         const patient = await Patient.findOne({_id: id});
 
         if(patient){

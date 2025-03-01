@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
-
+import axios from "axios";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,10 +25,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation"
+import { log } from "node:console";
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
+
+  //Add Patient use states
+  const [_id , setAadhaar] = useState("")
+  const [name , setName] = useState("")
+  const [phone , setPhone] = useState("")
+  const [email , setEmail] = useState("")
+  const [age , setAge] = useState(0)
+  const [sex , setSex] = useState("Male")
+  const [height , setHeight] = useState(0)
+  const [weight , setWeight] = useState(0)
+  // const [password , setPassword] = useState("")
+  const [bmi, setBmi] = useState("");
+  const [allergies, setAllergies] = useState(["", "", ""]); // Three allergy fields
 
   const notifications = [
     { type: "New", message: "New research paper on diabetes treatment" },
@@ -50,6 +64,43 @@ export default function DashboardPage() {
 
   const handlePatientClick = (patientId: string) => {
     router.push(`/patient/${patientId}`)
+  }
+  // const [height, setHeight] = useState(""); // in cm
+  // const [weight, setWeight] = useState(""); // in kg
+
+  // Calculate BMI when height or weight changes
+  const calculateBMI = (h, w) => {
+    if (h && w) {
+      const heightInMeters = h / 100;
+      const bmiValue = (w / (heightInMeters * heightInMeters)).toFixed(2);
+      setBmi(bmiValue);
+    } else {
+      setBmi("");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    console.log("Submitted");
+    
+    try{
+      const res = await axios.post(`https://localhost:5001/api/patient/`,{
+        _id , 
+        name,
+        phone,
+        email,
+        age,
+        sex,
+        height,
+        weight,
+        bmi : calculateBMI(height , weight),
+        allergies 
+      })
+
+      console.log(res);
+      
+    }catch(e){
+      console.log(e);
+    }
   }
 
   return (
@@ -121,50 +172,104 @@ export default function DashboardPage() {
                   <label htmlFor="aadhar" className="text-right">
                     Aadhar
                   </label>
-                  <Input id="aadhar" className="col-span-3" />
+                  <Input id="aadhar" className="col-span-3" onChange={(e) => setAadhaar(e.currentTarget.value)}/>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4" >
                   <label htmlFor="name" className="text-right">
                     Name
                   </label>
-                  <Input id="name" className="col-span-3" />
+                  <Input id="name" className="col-span-3" onChange={(e)=> setName(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="mobile" className="text-right">
                     Mobile No.
                   </label>
-                  <Input id="mobile" className="col-span-3" />
+                  <Input id="mobile" className="col-span-3" onChange={(e)=> setPhone(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="email" className="text-right">
                     Email
                   </label>
-                  <Input id="email" type="email" className="col-span-3" />
+                  <Input id="email" type="email" className="col-span-3" onChange={(e)=> setEmail(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="age" className="text-right">
                     Age
                   </label>
-                  <Input id="age" type="number" className="col-span-3" />
+                  <Input id="age" type="number" className="col-span-3" onChange={(e)=> setAge(Number(e.currentTarget.value))}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="sex" className="text-right">
                     Sex
                   </label>
-                  <select id="sex" className="col-span-3 form-select">
+                  <select id="sex" className="col-span-3 form-select" onChange={(e)=> setSex(e.currentTarget.value)}>
                     <option>Male</option>
                     <option>Female</option>
                     <option>Other</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="allergies" className="text-right">
-                    Allergies
-                  </label>
-                  <Input id="allergies" className="col-span-3" />
-                </div>
+                {/* Height */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="height" className="text-right">Height (cm)</label>
+            <Input 
+              id="height" 
+              type="number" 
+              className="col-span-3" 
+              value={height}
+              onChange={(e) => {
+                setHeight(Number(e.target.value));
+                calculateBMI(e.target.value, weight);
+              }}
+            />
+          </div>
+          {/* Weight */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="weight" className="text-right">Weight (kg)</label>
+            <Input 
+              id="weight" 
+              type="number" 
+              className="col-span-3" 
+              value={weight}
+              onChange={(e) => {
+                setWeight(Number(e.target.value));
+                calculateBMI(height, e.target.value);
+              }}
+            />
+          </div>
+          {/* BMI */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="bmi" className="text-right">BMI</label>
+            <Input id="bmi" className="col-span-3" value={bmi} readOnly />
+          </div>
+
+                {/* Allergies */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 1</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[0]} 
+              onChange={(e) => setAllergies([e.target.value, allergies[1], allergies[2]])} 
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 2</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[1]} 
+              onChange={(e) => setAllergies([allergies[0], e.target.value, allergies[2]])} 
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 3</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[2]} 
+              onChange={(e) => setAllergies([allergies[0], allergies[1], e.target.value])} 
+            />
+          </div>
+
               </div>
-              <Button type="submit">Add Patient</Button>
+              <Button onSubmit={handleSubmit} type="submit">Add Patient</Button>
             </DialogContent>
           </Dialog>
         </div>
@@ -250,7 +355,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* AI Chat & Case Handling */}
+        {/* AI Chat & Case Handling
         <Card>
           <CardHeader>
             <CardTitle>AI Chat & Case Handling</CardTitle>
@@ -267,7 +372,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </main>
     </div>
   )
