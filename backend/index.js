@@ -1,4 +1,6 @@
 const mailRouter = require("./router/mailer")
+const textPdfRouter = require("./router/text_pdf")
+// const dummyPrescriptionRoute = require("./router/create_prescription")
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -20,6 +22,9 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}))
 
 app.use("/api/v1" , mailRouter)
+app.use("/api/v1" , textPdfRouter)
+// app.use("/api/v1" , dummyPrescriptionRoute)
+
 
 app.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)

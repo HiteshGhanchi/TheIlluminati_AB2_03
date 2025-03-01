@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
-const {sendMailToEmailId} = require("../controllers/send_mail")
+const {sendMailWithPDF} = require("../controllers/send_mail")
 
-router.route("/send_mail/:id").post(sendMailToEmailId)
+router.route("/send_mail/:id").post(sendMailWithPDF)
 
 module.exports = router

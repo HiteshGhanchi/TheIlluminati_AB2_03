@@ -10,9 +10,9 @@ const caseSchema = new mongoose.Schema({
     required: true,
     ref: "Patient", // Links to Patient schema
   },
-  doctor_id:{
+  // doctor_id:{
     
-  },
+  // },
   created_at: {
     type: Date,
     default: Date.now,
