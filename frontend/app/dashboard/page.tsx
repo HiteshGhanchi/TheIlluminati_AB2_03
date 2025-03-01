@@ -51,6 +51,22 @@ export default function DashboardPage() {
   const handlePatientClick = (patientId: string) => {
     router.push(`/patient/${patientId}`)
   }
+  const [height, setHeight] = useState(""); // in cm
+  const [weight, setWeight] = useState(""); // in kg
+  const [bmi, setBmi] = useState("");
+
+  const [allergies, setAllergies] = useState(["", "", ""]); // Three allergy fields
+
+  // Calculate BMI when height or weight changes
+  const calculateBMI = (h, w) => {
+    if (h && w) {
+      const heightInMeters = h / 100;
+      const bmiValue = (w / (heightInMeters * heightInMeters)).toFixed(2);
+      setBmi(bmiValue);
+    } else {
+      setBmi("");
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -157,12 +173,66 @@ export default function DashboardPage() {
                     <option>Other</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="allergies" className="text-right">
-                    Allergies
-                  </label>
-                  <Input id="allergies" className="col-span-3" />
-                </div>
+                {/* Height */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="height" className="text-right">Height (cm)</label>
+            <Input 
+              id="height" 
+              type="number" 
+              className="col-span-3" 
+              value={height}
+              onChange={(e) => {
+                setHeight(e.target.value);
+                calculateBMI(e.target.value, weight);
+              }}
+            />
+          </div>
+          {/* Weight */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="weight" className="text-right">Weight (kg)</label>
+            <Input 
+              id="weight" 
+              type="number" 
+              className="col-span-3" 
+              value={weight}
+              onChange={(e) => {
+                setWeight(e.target.value);
+                calculateBMI(height, e.target.value);
+              }}
+            />
+          </div>
+          {/* BMI */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="bmi" className="text-right">BMI</label>
+            <Input id="bmi" className="col-span-3" value={bmi} readOnly />
+          </div>
+
+                {/* Allergies */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 1</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[0]} 
+              onChange={(e) => setAllergies([e.target.value, allergies[1], allergies[2]])} 
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 2</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[1]} 
+              onChange={(e) => setAllergies([allergies[0], e.target.value, allergies[2]])} 
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label className="text-right">Allergy 3</label>
+            <Input 
+              className="col-span-3"
+              value={allergies[2]} 
+              onChange={(e) => setAllergies([allergies[0], allergies[1], e.target.value])} 
+            />
+          </div>
+
               </div>
               <Button type="submit">Add Patient</Button>
             </DialogContent>
@@ -250,7 +320,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* AI Chat & Case Handling */}
+        {/* AI Chat & Case Handling
         <Card>
           <CardHeader>
             <CardTitle>AI Chat & Case Handling</CardTitle>
@@ -267,7 +337,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </main>
     </div>
   )
