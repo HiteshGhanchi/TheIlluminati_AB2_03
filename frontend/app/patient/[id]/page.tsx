@@ -52,7 +52,7 @@ export default function PatientProfilePage() {
   ]
 
   const [prescriptions, setPrescriptions] = useState([
-    { id: "P001", date: "2023-05-15", medicines: "Oseltamivir", dosage: "75mg twice daily", notes: "Take with food" },
+    { id: "67c325274b854f514b39eef1", date: "2023-05-15", medicines: "Oseltamivir", dosage: "75mg twice daily", notes: "Take with food" },
     {
       id: "P002",
       date: "2023-06-01",
