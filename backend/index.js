@@ -1,3 +1,4 @@
+const mailRouter = require("./routes/mailer")
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -18,10 +19,13 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}))
 
+app.use("/api/v1" , mailRouter)
 
 app.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)
 })
+
+
 
 // database connected
 connectDB().then(()=>{
