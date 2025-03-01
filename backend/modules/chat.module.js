@@ -9,10 +9,10 @@ const chatSchema = new mongoose.Schema({
   sender: {
     type: String,
     required: true,
-    enum : ["Patient", "Doctor"],
+    enum : ["Bot", "Doctor"],
   },
   message: {
-    type: String, // Chat message content
+    type: String, 
     required: true,
   },
   timestamp: {

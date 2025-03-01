@@ -23,7 +23,7 @@ const diagnosisSchema = new mongoose.Schema({
     required: true,
   },
   recommendations: {
-    type: String, 
+    type: String, // AI summary
   },
   created_at: {
     type: Date,
