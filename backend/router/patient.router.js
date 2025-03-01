@@ -4,7 +4,7 @@ const patientController = require("../controllers/patient.controller");
 router.post("/getPatient",patientController.getPatient);
 router.post("/",patientController.addPatient);
 router.delete("/",patientController.deletePatient);
-
+router.get("/getAllPatients/:doctor_id",patientController.getAllPatients);
 module.exports = router;
 
 
