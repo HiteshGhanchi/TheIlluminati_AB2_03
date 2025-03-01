@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import { PlusCircle, Send, Paperclip, Mic, AlertTriangle, BookOpen, Save, ArrowLeft, FileText } from "lucide-react"
 
+import { io } from "socket.io-client";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -48,6 +50,21 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
       timestamp: new Date(),
     },
   ])
+  console.log(`localhost:${process.env.NEXT_PUBLIC_PORT}`)
+  const socket = io(`localhost:${process.env.NEXT_PUBLIC_PORT}`);
+
+  function connectSocket() {
+    socket.on("connection", (socket) => {
+      console.log(socket);
+    });
+  }
+
+  useEffect(() => {
+    connectSocket();
+  }, []);
+
+  // useEffect(, [cas])
+
   const [inputMessage, setInputMessage] = useState("")
   const [summary, setSummary] = useState("")
   const chatEndRef = useRef<HTMLDivElement>(null)
