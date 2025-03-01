@@ -2,13 +2,16 @@ const mongoose = require("mongoose");
 
 const caseSchema = new mongoose.Schema({
   _id: {
-    type: mongoose.Schema.Types.ObjectId, // Unique Case ID
+    type: mongoose.Schema.Types.ObjectId, 
     auto: true,
   },
   patient_id: {
     type: String, // Aadhaar Number
     required: true,
     ref: "Patient", // Links to Patient schema
+  },
+  doctor_id:{
+    
   },
   created_at: {
     type: Date,

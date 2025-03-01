@@ -46,6 +46,27 @@ const patientSchema = new mongoose.Schema({
     type: [String], // Array of allergies
     default: [],
   },
+  terminal_illness: {
+    type: String, 
+    default: "",
+  },
+  blood_group: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  },
+  height: {
+    type: Number, 
+  },
+  weight: {
+    type: Number, 
+  },
+  bmi: {
+    type: Number, 
+  },
+  password: {
+    type: String, 
+    required: true,
+  },
   created_at: {
     type: Date,
     default: Date.now,

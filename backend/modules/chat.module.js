@@ -7,11 +7,12 @@ const chatSchema = new mongoose.Schema({
     ref: "Case",
   },
   sender: {
-    type: String, // "Doctor" or "Bot"
+    type: String,
     required: true,
+    enum : ["Bot", "Doctor"],
   },
   message: {
-    type: String, // Chat message content
+    type: String, 
     required: true,
   },
   timestamp: {

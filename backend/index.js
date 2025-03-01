@@ -12,7 +12,7 @@ cors({
 })
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 8000
 
 // middleware
 app.use(cors())
@@ -38,3 +38,7 @@ app.get('/',(req,res)=>{
     res.send('Hello World')
 })
 
+// routes
+const patientRouter = require('./router/patient.router')
+
+app.use('/api/patient',patientRouter)
