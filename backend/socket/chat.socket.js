@@ -1,10 +1,12 @@
 const Chat = require("../modules/chat.module");
 const Case = require("../modules/cases.module");
 const axios = require("axios");
+const mongoose = require("mongoose");
 
 module.exports = (io) => {
     io.on("connection", (socket) => {
         console.log("🔗 Client connected:", socket.id);
+        // console.log(Date.now());
 
         // **User joins a room**
         socket.on("joinRoom", (caseId) => {
@@ -15,16 +17,19 @@ module.exports = (io) => {
         });
 
         // **Handle sending messages**
-        socket.on("sendMessage", async ({ caseId, patientId, sender, message }, callback) => {
+        socket.on("sendMessage", async ({ caseId, patientId, doctorId , sender, message }, callback) => {
             try {
                 console.log(`📩 Message from ${sender}: "${message}"`);
+                console.log()
 
                 // **1. If `caseId` is missing, create a new Case & Chat**
                 if (!caseId) {
                     console.log("⚠️ No caseId provided, creating a new case...");
+                    // const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
+                    // const patientObjectId = new mongoose.Types.ObjectId(patientId);
 
                     // **Create New Case**
-                    const newCase = new Case({ patient_id: patientId, doctor_id: [] });
+                    const newCase = new Case({ patient_id: patientId, doctor_id: doctorId });
                     await newCase.save();
 
                     // **Create New Chat**
