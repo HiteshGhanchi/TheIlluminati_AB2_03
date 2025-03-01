@@ -61,16 +61,14 @@ export default function DashboardPage() {
   ]
 
   const [patients , setPatients] = useState([
-    // { id: "P001", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
-    // { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
-    // { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
+    { id: "67c325274b854f514b39eef1", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
+    { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
+    { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
   ])
 
-  // const filteredPatients = patients.filter(
-  //   (patient) =>
-  //     patient?.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     patient?.name?.toLowerCase().includes(searchQuery.toLowerCase()),
-  // )
+  const filteredPatients = patients.filter(
+    (patient) => patient.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
   const handlePatientClick = (patientId: string) => {
     router.push(`/patient/${patientId}`)

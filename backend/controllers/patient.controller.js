@@ -1,7 +1,14 @@
 const Patient = require("../modules/patient.module");
+<<<<<<< HEAD
 const Case = require("../modules/cases.module")
 const Prescription = require("../modules/prescription.module")
 const Diagnosis = require("../modules/diagnoses.module")
+=======
+const Case = require("../modules/cases.module");
+const Prescription = require("../modules/prescription.module");
+const Diagnosis = require("../modules/diagnoses.module");
+
+>>>>>>> 30f66c73c997c15bcbfb53304deca846861e834c
 const getPatient = async (req , res) => {
     try{
         const { aadhar_id , password } = req.body;
@@ -64,22 +71,20 @@ const deletePatient = async (req , res) => {
 const getAllPatients = async (req , res) => {
     try {
         const doctor_id = req.params.doctor_id;
-
+    
         const all_cases = await Case.find({ doctor_id }).populate("patient_id");
-        console.log(all_cases);
-        
 
+    
         const active_length = all_cases.filter((caseItem) => caseItem?.status === "ongoing").length;
-        console.log(active_length);
-        
+    
         // Fetch all prescriptions and get their count properly
         const all_prescriptions = await Prescription.find({ doctor_id });
         const prescription_count = all_prescriptions.length;
-
+    
         // Fetch all diagnoses and get their count properly
         const all_diagnoses = await Diagnosis.find({ doctor_id });
         const diagnosis_count = all_diagnoses.length;
-
+    
         return res.status(200).json({
             status: true,
             data: {

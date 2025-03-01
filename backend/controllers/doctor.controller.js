@@ -11,12 +11,22 @@ const addDoctor = async (req, res) => {
     }
 }
 
+const getDocById = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const doctor = await Doctor.findById(id);
+        return res.status(200).json({status: true , data: doctor});
+    }
+    catch(err){
+        return res.status(500).json({status: false , message: err.message});
+    }
+}
+
 const getDoctor = async (req, res) => {
     try{
         const {email, password} = req.body;
-        // console.log(email , password);
-        
-        const doctor = await Doctor.findOne({ email: email });
+
+        const doctor = await Doctor.findOne({email: email});
 
         if(!doctor){    
             return res.status(404).json({status: false , message: "Doctor not found"});
@@ -33,6 +43,7 @@ const getDoctor = async (req, res) => {
     }
 }
 
+<<<<<<< HEAD
 const getDocById = async (req, res) => {
     try{
         const {id} = req.params;
@@ -47,3 +58,6 @@ const getDocById = async (req, res) => {
 
 
 module.exports = {addDoctor , getDoctor , getDocById };
+=======
+module.exports = {addDoctor , getDoctor , getDocById};
+>>>>>>> 30f66c73c997c15bcbfb53304deca846861e834c
