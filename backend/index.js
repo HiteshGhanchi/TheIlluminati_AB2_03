@@ -1,6 +1,6 @@
-const mailRouter = require("./router/mailer")
+const mailRouter = require('./router/mailer')
 const textPdfRouter = require("./router/text_pdf")
-// const dummyPrescriptionRoute = require("./router/create_prescription")
+
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -55,9 +55,7 @@ app.get('/',(req,res)=>{
 // routes
 require("./socket/chat.socket")(io);
 const patientRouter = require('./router/patient.router')
-const mailRouter = require('./router/mailer')
 const caseRouter = require('./router/case.router')
 
 app.use('/api/patient',patientRouter)
 app.use('/api/cases',caseRouter)
-app.use("/api/v1" , mailRouter)
