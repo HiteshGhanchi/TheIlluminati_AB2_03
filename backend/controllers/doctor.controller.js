@@ -43,21 +43,7 @@ const getDoctor = async (req, res) => {
     }
 }
 
-<<<<<<< HEAD
-const getDocById = async (req, res) => {
-    try{
-        const {id} = req.params;
-        const doctor = await Doctor.findById(id);
-        return res.status(200).json({status: true , data: doctor});
-    }
-    catch(err){
-        return res.status(500).json({status: false , message: err.message});
-    }
-}
-
 
 
 module.exports = {addDoctor , getDoctor , getDocById };
-=======
-module.exports = {addDoctor , getDoctor , getDocById};
->>>>>>> 30f66c73c997c15bcbfb53304deca846861e834c
+

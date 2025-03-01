@@ -1,14 +1,8 @@
 const Patient = require("../modules/patient.module");
-<<<<<<< HEAD
-const Case = require("../modules/cases.module")
-const Prescription = require("../modules/prescription.module")
-const Diagnosis = require("../modules/diagnoses.module")
-=======
 const Case = require("../modules/cases.module");
 const Prescription = require("../modules/prescription.module");
 const Diagnosis = require("../modules/diagnoses.module");
 
->>>>>>> 30f66c73c997c15bcbfb53304deca846861e834c
 const getPatient = async (req , res) => {
     try{
         const { aadhar_id , password } = req.body;
