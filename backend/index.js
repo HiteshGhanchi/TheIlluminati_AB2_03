@@ -1,4 +1,4 @@
-const mailRouter = require("./routes/mailer")
+const mailRouter = require("./router/mailer")
 const dotenv = require('dotenv')
 dotenv.config()
 
