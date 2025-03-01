@@ -67,6 +67,7 @@ const getAllPatients = async (req , res) => {
         const doctor_id = req.params.doctor_id;
     
         const all_cases = await Case.find({ doctor_id }).populate("patient_id");
+
     
         const active_length = all_cases.filter((caseItem) => caseItem?.status === "ongoing").length;
     

@@ -8,7 +8,7 @@ const caseSchema = new mongoose.Schema({
   patient_id: {
     type: mongoose.Schema.Types.ObjectId, // Aadhaar Number
     required: true,
-    ref: "Patient", // Links to Patient schema
+    ref: "Patient", 
   },
   doctor_id:{
     type : mongoose.Schema.Types.ObjectId,
