@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
 
 const diagnosisSchema = new mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId,
-    auto: true,
-  },
   case_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Case",
   },
   doctor_id: {
-    type: String, 
+    type: mongoose.Schema.Types.ObjectId, 
     required: true,
+    ref: "Doctor",
   },
   symptoms: {
     type: [String], 

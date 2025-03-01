@@ -6,6 +6,7 @@ dotenv.config()
 
 const patientRouter = require('./router/patient.router')
 const caseRouter = require('./router/case.router')
+const doctorRouter = require('./router/doctor.router')
 const express = require('express')
 const http = require('http')
 const socketIo = require('socket.io')
@@ -37,6 +38,7 @@ app.use("/api/v1" , textPdfRouter)
 // app.use("/api/v1" , dummyPrescriptionRoute)
 app.use('/api/patient',patientRouter)
 app.use('/api/cases',caseRouter)
+app.use('/api/doctor',doctorRouter)
 
 server.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)
@@ -57,4 +59,3 @@ app.get('/',(req,res)=>{
 
 // routes
 require("./socket/chat.socket")(io);
-
