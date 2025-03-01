@@ -1,10 +1,21 @@
 const mongoose = require("mongoose");
 
 const patientSchema = new mongoose.Schema({
-  _id: {
-    type: String, 
-    required: true,
-    unique: true,
+  // _id: {
+  //   type: String, 
+  //   required: true,
+  //   unique: true,
+  //   validate: {
+  //     validator: function (v) {
+  //       return /^\d{12}$/.test(v); 
+  //     },
+  //     message: "Invalid Aadhaar number!",
+  //   },
+  // },
+  aadhar_id : {
+    type:String,
+    required : true,
+    unique : true,
     validate: {
       validator: function (v) {
         return /^\d{12}$/.test(v); 

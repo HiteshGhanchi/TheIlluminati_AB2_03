@@ -2,9 +2,9 @@ const Patient = require("../modules/patient.module");
 
 const getPatient = async (req , res) => {
     try{
-        const { id , password } = req.body;
+        const { aadhar_id , password } = req.body;
 
-        const patient = await Patient.findOne({_id: id});
+        const patient = await Patient.findOne({aadhar_id: aadhar_id});
 
         if(!patient){
             return res.status(404).json({status: false , message: "Patient not found"});
@@ -23,10 +23,10 @@ const getPatient = async (req , res) => {
 
 const addPatient = async (req , res) => {
     try{
-        const {id , ...rest} = req.body;
-        console.log("In addPatient!!");
+        const { aadhar_id , ...rest} = req.body;
+        // console.log("In addPatient!!");
         
-        const patient = await Patient.findOne({_id: id});
+        const patient = await Patient.findOne({aadhar_id: aadhar_id});
 
         if(patient){
             return res.status(400).json({status: false , message: "Patient already exists"});
@@ -34,7 +34,7 @@ const addPatient = async (req , res) => {
 
         const password = Math.random().toString(36).slice(2);
         rest.password = password;
-        rest._id = id;
+        rest.aadhar_id = aadhar_id;
 
         const newPatient = new Patient(rest);
         await newPatient.save();

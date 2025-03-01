@@ -1,5 +1,6 @@
 "use client"
 
+require("dotenv").config
 import { use, useState } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
 import axios from "axios";
@@ -32,7 +33,7 @@ export default function DashboardPage() {
   const router = useRouter()
 
   //Add Patient use states
-  const [_id , setAadhaar] = useState("")
+  const [aadhar_id , setAadhaar] = useState("")
   const [name , setName] = useState("")
   const [phone , setPhone] = useState("")
   const [email , setEmail] = useState("")
@@ -80,11 +81,12 @@ export default function DashboardPage() {
   };
 
   const handleSubmit = async (e) => {
-    console.log("Submitted");
+    // e.preventDefault();
+    console.log(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/`);
     
     try{
-      const res = await axios.post(`https://localhost:5001/api/patient/`,{
-        _id , 
+      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/`,{
+        aadhar_id , 
         name,
         phone,
         email,
@@ -269,7 +271,7 @@ export default function DashboardPage() {
           </div>
 
               </div>
-              <Button onSubmit={handleSubmit} type="submit">Add Patient</Button>
+              <Button onClick={handleSubmit} type="submit">Add Patient</Button>
             </DialogContent>
           </Dialog>
         </div>
