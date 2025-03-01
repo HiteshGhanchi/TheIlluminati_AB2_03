@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -29,6 +29,20 @@ import { useRouter } from "next/navigation"
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
+
+  //Add Patient use states
+  const [aadhaar_id , setAadhaar] = useState("")
+  const [name , setName] = useState("")
+  const [phone , setPhone] = useState("")
+  const [email , setEmail] = useState("")
+  const [age , setAge] = useState(0)
+  const [sex , setSex] = useState("")
+  const [allergy1 , setAllergy1] = useState("")
+  const [allergy2 , setAllergy2] = useState("")
+  const [allergy3 , setAllergy3] = useState("")
+  const [height , setHeight] = useState(0)
+  const [weight , setWeight] = useState(0)
+  const [password , setPassword] = useState("")
 
   const notifications = [
     { type: "New", message: "New research paper on diabetes treatment" },
@@ -121,37 +135,37 @@ export default function DashboardPage() {
                   <label htmlFor="aadhar" className="text-right">
                     Aadhar
                   </label>
-                  <Input id="aadhar" className="col-span-3" />
+                  <Input id="aadhar" className="col-span-3" onChange={(e) => setAadhaar(e.currentTarget.value)}/>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4" >
                   <label htmlFor="name" className="text-right">
                     Name
                   </label>
-                  <Input id="name" className="col-span-3" />
+                  <Input id="name" className="col-span-3" onChange={(e)=> setName(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="mobile" className="text-right">
                     Mobile No.
                   </label>
-                  <Input id="mobile" className="col-span-3" />
+                  <Input id="mobile" className="col-span-3" onChange={(e)=> setPhone(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="email" className="text-right">
                     Email
                   </label>
-                  <Input id="email" type="email" className="col-span-3" />
+                  <Input id="email" type="email" className="col-span-3" onChange={(e)=> setEmail(e.currentTarget.value)}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="age" className="text-right">
                     Age
                   </label>
-                  <Input id="age" type="number" className="col-span-3" />
+                  <Input id="age" type="number" className="col-span-3" onChange={(e)=> setAge(Number(e.currentTarget.value))}/>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="sex" className="text-right">
                     Sex
                   </label>
-                  <select id="sex" className="col-span-3 form-select">
+                  <select id="sex" className="col-span-3 form-select" onChange={(e)=> setSex(e.currentTarget.value)}>
                     <option>Male</option>
                     <option>Female</option>
                     <option>Other</option>
@@ -161,10 +175,10 @@ export default function DashboardPage() {
                   <label htmlFor="allergies" className="text-right">
                     Allergies
                   </label>
-                  <Input id="allergies" className="col-span-3" />
+                  <Input id="allergies" className="col-span-3"/>
                 </div>
               </div>
-              <Button type="submit">Add Patient</Button>
+              <Button onSubmit={() =>{}} type="submit">Add Patient</Button>
             </DialogContent>
           </Dialog>
         </div>
@@ -251,7 +265,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* AI Chat & Case Handling */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>AI Chat & Case Handling</CardTitle>
           </CardHeader>
@@ -267,7 +281,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </main>
     </div>
   )
