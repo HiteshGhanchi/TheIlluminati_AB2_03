@@ -1,7 +1,7 @@
 "use client"
 
 require("dotenv").config
-import { use, useState } from "react"
+import { useState , useEffect } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
 import axios from "axios";
 import { Button } from "@/components/ui/button"
@@ -32,6 +32,15 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
 
+  // doctor use states
+  const [doc_name , setDocName] = useState<string | null>(null);
+  const [doctor_id , setDocId] = useState<string | null>(null);
+  const [allPatientLen , setAllPatientLen] = useState(0)
+  const [diagnoses , setDiagnoses] = useState(0)
+  const [prescriptions , setPrescriptions] = useState(0)
+  const [active , setActive] = useState(0)
+  
+
   //Add Patient use states
   const [aadhar_id , setAadhaar] = useState("")
   const [name , setName] = useState("")
@@ -51,11 +60,11 @@ export default function DashboardPage() {
     { type: "Reminder", message: "Follow-up with Jane Smith scheduled" },
   ]
 
-  const patients = [
+  const [patients , setPatients] = useState([
     { id: "P001", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
     { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
     { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
-  ]
+  ])
 
   const filteredPatients = patients.filter(
     (patient) =>
@@ -105,6 +114,50 @@ export default function DashboardPage() {
     }
   }
 
+  useEffect(() => {
+    const storedDoctorId = localStorage.getItem("doctor_id");
+    if (storedDoctorId) {
+      setDocId(storedDoctorId);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (doctor_id) {
+      // console.log(doctor_id)
+      axios
+        .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/doctor/getDocById/${doctor_id}`)
+        .then((res) => {
+          console.log(res.data);
+          setDocName(res.data?.data?.name);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [doctor_id])
+
+  useEffect(() => {
+    if(doctor_id){
+      axios
+        .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/getAllPatients/${doctor_id}`)
+        .then((res) => {
+          console.log(res.data);
+          setAllPatientLen(res.data?.data?.count);
+          setDiagnoses(res.data?.data?.diagnoses);
+          setPrescriptions(res.data?.data?.prescription);
+          setActive(res.data?.data?.active);
+          if(res.data?.data?.cases.length > 0){
+            setPatients(res.data?.data?.cases);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    
+  }, [doctor_id]);
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Header */}
@@ -112,7 +165,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold text-primary">DocGPT</h1>
-            <span className="text-xl">Hello, Dr. Sarah Johnson</span>
+            <span className="text-xl">Hello, {doc_name}</span>
           </div>
           <div className="flex items-center space-x-4">
             <DropdownMenu>
@@ -284,7 +337,7 @@ export default function DashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,234</div>
+              <div className="text-2xl font-bold">{allPatientLen}</div>
               <p className="text-xs text-muted-foreground">+10% from last month</p>
             </CardContent>
           </Card>
@@ -294,7 +347,7 @@ export default function DashboardPage() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">42</div>
+              <div className="text-2xl font-bold">{active}</div>
               <p className="text-xs text-muted-foreground">-5% from last week</p>
             </CardContent>
           </Card>
@@ -304,7 +357,7 @@ export default function DashboardPage() {
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">89</div>
+              <div className="text-2xl font-bold">{diagnoses || 0}</div>
               <p className="text-xs text-muted-foreground">+20% from last week</p>
             </CardContent>
           </Card>
@@ -314,7 +367,7 @@ export default function DashboardPage() {
               <Pill className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">156</div>
+              <div className="text-2xl font-bold">{prescriptions}</div>
               <p className="text-xs text-muted-foreground">+5% from yesterday</p>
             </CardContent>
           </Card>
