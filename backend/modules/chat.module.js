@@ -3,10 +3,6 @@ const mongoose = require("mongoose");
 const chatSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true,
-  },
-  case_id: {
-    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Case",
   },
