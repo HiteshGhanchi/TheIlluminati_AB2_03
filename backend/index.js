@@ -56,6 +56,8 @@ app.get('/',(req,res)=>{
 require("./socket/chat.socket")(io);
 const patientRouter = require('./router/patient.router')
 const caseRouter = require('./router/case.router')
+const doctorRouter = require('./router/doctor.router')
 
 app.use('/api/patient',patientRouter)
 app.use('/api/cases',caseRouter)
+app.use('/api/doctor',doctorRouter)
