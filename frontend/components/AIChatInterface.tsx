@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import axios from "axios";
 
 type Message = {
   id: string;
@@ -50,34 +51,52 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
   const [summary, setSummary] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`, { transports: ["websocket"] });
-  const handleSelectCase = (caseId: string) => {
+  const handleSelectCase = async (caseId: string) => {
     setSelectedCase(caseId);
-    // Here you would typically fetch the messages for this case
-    // This is a mock implementation
-    setMessages([
-      {
-        id: "1",
-        sender: "Doctor",
-        content: "Patient complains of persistent headaches and dizziness.",
-        timestamp: new Date('2025-03-02T12:30:00Z'), // Old message with timestamp
-      },
-      {
-        id: "2",
+    
+    try {
+      // Fetch chat history for this case
+      const response = await axios.get(
+        `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/cases/chats/${caseId}`
+      );
+      
+      console.log(response?.data?.chat);
+
+      // Transform messages to match your frontend Message type
+      const chatHistory = response.data?.chat.messages.map((msg: any) => ({
+        id: msg._id || new Date(msg.timestamp).toISOString(), // Use message ID if available or generate one
+        sender: msg.sender,
+        content: msg.message, // Backend uses 'message', frontend uses 'content'
+        timestamp: new Date(msg.timestamp)
+      }));
+      
+      setMessages(chatHistory);
+    } catch (error) {
+      console.error("Failed to fetch chat history:", error);
+      // Show an empty chat or error message
+      setMessages([{
+        id: "error",
         sender: "Bot",
-        content:
-          "These symptoms could be indicative of hypertension. I recommend checking the patient's blood pressure and reviewing their medical history for any risk factors.",
-        timestamp: new Date('2025-03-02T12:30:00Z'), // Old message with timestamp
-      },
-    ]);
+        content: "Failed to load previous messages. Please try again.",
+        timestamp: new Date()
+      }]);
+    }
   };
 
   useEffect(() => {
     // Fetch cases for the patient
-    const mockCases: Case[] = [
-      { id: "C001", diagnosis: "Hypertension", lastUpdate: new Date('2025-03-02T12:30:00Z'), status: "ongoing" },
-      { id: "C002", diagnosis: "Diabetes Type 2", lastUpdate: new Date('2025-03-02T12:30:00Z'), status: "resolved" },
-    ];
-    setCases(mockCases);
+    const sendReq = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/cases/${patientId}`
+        );
+        console.log(res);
+        setCases(res.data.cases);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    sendReq();
 
     // If there's an initial case ID, load that case
     if (initialCaseId) {
@@ -95,9 +114,15 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
 
     socket.emit("joinRoom", selectedCase);
 
-    socket.on("newMessage", (message: Message) => {
-      console.log("New message:", message);
-      setMessages((prev) => [...prev, message]);
+    socket.on("newMessage", (messageData) => {
+      console.log("New message:", messageData);
+      const formattedMessage: Message = {
+        id: new Date().toISOString(), // Generate a unique ID
+        sender: messageData.sender,
+        content: messageData.message, // Map 'message' to 'content'
+        timestamp: new Date(messageData.timestamp), 
+      };
+      setMessages((prev) => [...prev, formattedMessage]);
     });
 
     return () => {
@@ -189,15 +214,15 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
         <ScrollArea className="h-[calc(100vh-120px)]">
           {cases.map((caseItem) => (
             <Card
-              key={caseItem.id}
-              className={`mb-2 cursor-pointer ${selectedCase === caseItem.id ? "border-primary" : ""}`}
-              onClick={() => handleSelectCase(caseItem.id)}
+              key={caseItem._id}
+              className={`mb-2 cursor-pointer ${selectedCase === caseItem._id ? "border-primary" : ""}`}
+              onClick={() => handleSelectCase(caseItem._id)}
             >
               <CardHeader className="p-4">
                 <CardTitle className="text-sm font-medium">
-                  {caseItem.id}: {caseItem.diagnosis}
+                  {caseItem._id}
                 </CardTitle>
-                <p className="text-xs text-gray-500">{caseItem.lastUpdate.toLocaleDateString()}</p>
+                <p className="text-xs text-gray-500">{caseItem?.created_at.split("T")[0]}</p>
                 <Badge variant={caseItem.status === "ongoing" ? "default" : "secondary"}>{caseItem.status}</Badge>
               </CardHeader>
             </Card>
@@ -238,7 +263,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
                 }`} 
               >
                 {message.content}
-                <div className="text-xs text-gray-500 mt-2">{new Date(message.timestamp).toLocaleTimeString()}</div>
+                <div className="text-xs text-gray-500 mt-2">{new Date(message.timestamp).toLocaleString()}</div>
               </div>
             </div>
           ))}

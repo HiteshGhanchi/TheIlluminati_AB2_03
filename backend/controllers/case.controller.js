@@ -72,10 +72,21 @@ const addCase = async (req, res) => {
 }
 
 
+const getChat = async (req , res) => {
+    try {
+        const chat = await Chat.findById(req.params.id);
+        res.json({ success: true, chat });
+      } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+      }
+}
+
+
 module.exports = {
     getCases,
     getCase,
     startCase,
-    addCase
+    addCase,
+    getChat
 
 };

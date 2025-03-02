@@ -57,7 +57,7 @@ module.exports = (io) => {
                 console.log(`💾 Message Stored: "${message}"`);
 
                 // **5. Emit User's Message to Frontend**
-                io.to(caseId).emit("newMessage", { sender, message, timestamp: Date.now() });
+                // io.to(caseId).emit("newMessage", { sender, message, timestamp: Date.now() });
 
                 // **6. Return `caseId` in callback (for new cases)**
                 if (callback) {
@@ -67,13 +67,13 @@ module.exports = (io) => {
                 // **7. If Doctor sends a message, get AI response**
                 if (sender === "Doctor") {
                     console.log(`🤖 Sending to AI: "${message}"`);
-                    const flaskAPI = "http://localhost:8000/api/cases/flasktest";
+                    const flaskAPI = "https://3311-2405-201-27-e843-4804-28b1-e233-734b.ngrok-free.app/chat";
 
                     try {
-                        const { data } = await axios.post(flaskAPI, { prompt: message });
-
+                        const { data } = await axios.post(flaskAPI, { input: message , session_id: caseId });
                         if (data) {
-                            const botMessage = data.data;
+                            const botMessage = data.answer;
+
                             console.log(`🤖 AI Response: "${botMessage}"`);
 
                             // **8. Store Bot's Message**
@@ -83,6 +83,7 @@ module.exports = (io) => {
 
                             // **9. Emit Bot's Message to Frontend**
                             io.to(caseId).emit("newMessage", { sender: "Bot", message: botMessage, timestamp: Date.now() });
+                            console.log(`✅ AI Response Sent to Frontend: "${botMessage}"`);
                         }else{
                             console.error("❌ AI API Error:", data);
                         }
