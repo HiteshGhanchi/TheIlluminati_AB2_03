@@ -12,20 +12,45 @@ const sendMailWithPDF = async (req, res) => {
             params: { id: caseId },
         } = req;
         
+        // Fetch data
+        const correctCase = await Case.findOne({ _id: caseId });
+        const correctPrescription = await Prescription.findOne({ case_id: caseId });
+        const correctPatient = await Patient.findOne({ _id: correctCase.patient_id });
 
-        const correctCase = await Case.findOne({_id : caseId})
-        const correctPrescription = await Prescription.findOne({case_id : caseId})
-        const correctPatient =  await Patient.findOne({_id : correctCase.patient_id})
+        console.log(correctCase.patient_id);
 
-        console.log(correctCase.patient_id )
+        const emailId = correctPatient.email;
+        const { doctor_id, medicines, notes } = correctPrescription;
 
-        const emailId = correctPatient.email
+        // Generate prescription information for PDF
+        let prescriptionHTML = `
+            <h2>Prescription Details</h2>
+            <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">
+                <tr style="background-color: #f2f2f2;">
+                    <th>Doctor ID</th>
+                    <th>Case ID</th>
+                    <th>Medicine</th>
+                    <th>Dosage</th>
+                </tr>`;
 
-        info = `${correctPrescription.medicines}`
-        // **1. Generate PDF in Memory**
-        const pdfBuffer = await generatePDF(info);
+        medicines.forEach(med => {
+            prescriptionHTML += `
+                <tr>
+                    <td>${doctor_id}</td>
+                    <td>${caseId}</td>
+                    <td>${med.name}</td>
+                    <td>${med.dosage}</td>
+                </tr>`;
+        });
 
-        // **2. Setup Nodemailer Transporter**
+        prescriptionHTML += `</table>
+            <br>
+            <strong>Additional Notes:</strong>
+            <p>${notes || "No additional notes provided."}</p>`;
+
+        
+
+        // Setup Nodemailer Transporter
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
@@ -36,11 +61,28 @@ const sendMailWithPDF = async (req, res) => {
             }
         });
 
-        // **3. Send Email with PDF Attachment**
+        // Email content with stethoscope logo & structured prescription details
+        const emailHTML = `
+            <div style="text-align: center;">
+                <a  href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXRi-odzHw8IDZ1jyFyAlJIoj_kUcYp1BKig&s target="_blank">
+                    <img style="height:200px; width:250px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXRi-odzHw8IDZ1jyFyAlJIoj_kUcYp1BKig&s" alt="Stethoscope" width="100">
+                </a>
+                <h1>Your Prescription</h1>
+            </div>
+            ${prescriptionHTML}
+        `;
+
+        // Generate PDF in Memory
+        const pdfBuffer = await generatePDF(emailHTML);
+
+        // console.log(emailHTML);
+        
+
+        // Send Email with PDF Attachment
         await transporter.sendMail({
             to: emailId,
             subject: "Your Prescription",
-            html: `<h1>Your Prescription</h1>`,
+            html: emailHTML,
             attachments: [
                 {
                     filename: "prescription.pdf",
@@ -58,7 +100,6 @@ const sendMailWithPDF = async (req, res) => {
         res.status(500).json({ msg: "Failed to send email with PDF", error: error.message });
     }
 };
-
 
 
 module.exports = { sendMailWithPDF };
