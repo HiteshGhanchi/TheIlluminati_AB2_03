@@ -70,7 +70,7 @@ retriever = vectorstore.as_retriever(search_kwargs={"score_threshold": 0.89,"inc
 # Initialize the model
 model = ChatGroq(
     groq_api_key=groq_api_key,
-    model_name="qwen-2.5-32b",
+    model_name="llama-3.3-70b-versatile",
     max_tokens=355,
     temperature =1
   
@@ -215,6 +215,8 @@ async def get_summary(session_id: str):
     )
     summary = summary_response["answer"]
     return {"session_id": session_id, "summary": summary}
+
+
 
 
 # Run the app
