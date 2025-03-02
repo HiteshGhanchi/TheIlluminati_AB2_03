@@ -120,7 +120,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
   useEffect(() => {
     if (!selectedCase) return;
     // window.location.reload()
-    const socket = io(`http://localhost:8000`, { 
+    const socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`, { 
       transports: ["websocket"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
@@ -146,7 +146,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
 
   const handleSendMessage = () => {
 
-    const socket = io(`http://localhost:8000`, { 
+    const socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`, { 
       transports: ["websocket"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
