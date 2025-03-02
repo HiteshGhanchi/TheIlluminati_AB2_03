@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import jsPDF from "jspdf"
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MessageSquare, Download, Mail, Plus } from "lucide-react";
@@ -55,35 +55,36 @@ export default function PatientProfilePage() {
     familyHistory: "Father: Hypertension, Mother: Type 2 Diabetes",
   });
 
-  const handleDownload = async (prescription) => {
-    console.log("Download button clicked");
-    try{
+  const handleDownloadPrescription = (prescription) => {
+    const doc = new jsPDF()
 
-      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/text_pdf` , {
-        info : `<h1> ${prescription.medicines[0].name || "HMPV Vaccine"}</h1> 
-        <br> <h2> ${prescription.medicines[0].dosage}</h2>`
-        
-      },
-      {
-        responseType: "blob", // Ensures binary response
-    })
-      console.log(res);
+    // Add content to the PDF
+    doc.setFontSize(18)
+    doc.text("Prescription", 105, 15, { align: "center" })
 
-      // Convert response into a Blob
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      const link = document.createElement("a");
+    doc.setFontSize(12)
+    doc.text(`Patient: ${patient.name}`, 20, 30)
+    doc.text(`Patient ID: ${patient.id}`, 20, 40)
+    doc.text(`Date: ${prescription.date}`, 20, 50)
+    doc.text(`Prescription ID: ${prescription.id}`, 20, 60)
 
-      link.href = window.URL.createObjectURL(blob);
-      link.setAttribute("download", "prescription.pdf");
+    doc.setFontSize(14)
+    doc.text("Medicines:", 20, 75)
+    doc.setFontSize(12)
+    doc.text(prescription.medicines, 30, 85)
 
-      // Append to body, trigger click, and remove
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-    }catch(e){
-      console.log(e);
-    }
+    doc.setFontSize(14)
+    doc.text("Dosage:", 20, 100)
+    doc.setFontSize(12)
+    doc.text(prescription.dosage, 30, 110)
+
+    doc.setFontSize(14)
+    doc.text("Notes:", 20, 125)
+    doc.setFontSize(12)
+    doc.text(prescription.notes, 30, 135)
+
+    // Save the PDF
+    doc.save(`prescription_${prescription.id}.pdf`)
   }
 
   useEffect(() => {
@@ -501,7 +502,7 @@ export default function PatientProfilePage() {
                           <TableCell>{prescription.notes}</TableCell>
                           <TableCell>{prescription.case_id}</TableCell>
                           <TableCell>
-                            <Button onClick={() => handleDownload(prescription)} variant="ghost" size="sm">
+                            <Button onClick={() => handleDownloadPrescription(prescription)} variant="ghost" size="sm">
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>
