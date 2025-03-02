@@ -91,9 +91,9 @@ export default function HealthcareLanding() {
             </div>
             <div className="flex items-center justify-center">
               <Image
-                src="/placeholder.svg?height=500&width=500"
-                width={500}
-                height={500}
+                src="/hero.png"
+                width={800}
+                height={800}
                 alt="Doctor using AI dashboard"
                 className="rounded-lg shadow-lg"
               />
@@ -247,25 +247,25 @@ export default function HealthcareLanding() {
               <CarouselContent>
                 {[
                   {
-                    name: "Dr. Sarah Johnson",
-                    role: "Cardiologist, Memorial Hospital",
+                    name: "Dr. Rajesh Sharma",
+                    role: "Cardiologist, Apollo Hospital",
                     quote:
                       "This AI platform has transformed my practice. I can quickly access the latest research and get personalized recommendations for my patients.",
-                    image: "/placeholder.svg?height=100&width=100",
+                    image: "/doctor1.png",
                   },
                   {
-                    name: "Dr. Michael Chen",
-                    role: "Neurologist, University Medical Center",
+                    name: "Dr. Ananya Rao",
+                    role: "Neurologist, Columbia Asia Hospital",
                     quote:
                       "The diagnostic support has been invaluable. It's like having a team of specialists at my fingertips, helping me consider all possible diagnoses.",
-                    image: "/placeholder.svg?height=100&width=100",
+                    image: "/doctor2.png",
                   },
                   {
-                    name: "Dr. Emily Rodriguez",
+                    name: "Dr. Priya Agarwal",
                     role: "Primary Care Physician",
                     quote:
                       "The drug interaction detection feature has helped me avoid potential medication errors. It's an essential safety net for my practice.",
-                    image: "/placeholder.svg?height=100&width=100",
+                    image: "/doctor3.png",
                   },
                 ].map((testimonial, index) => (
                   <CarouselItem key={index}>

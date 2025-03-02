@@ -1,6 +1,7 @@
 "use client"
 
-require("dotenv").config
+// require("dotenv").config
+
 import { useState , useEffect } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
 import axios from "axios";
@@ -56,7 +57,7 @@ export default function DashboardPage() {
 
   const notifications = [
     { type: "New", message: "New research paper on diabetes treatment" },
-    { type: "Urgent", message: "Critical update for patient John Doe" },
+    { type: "Urgent", message: "Critical update for patient Amit Khanna" },
     { type: "Reminder", message: "Follow-up with Jane Smith scheduled" },
   ]
 

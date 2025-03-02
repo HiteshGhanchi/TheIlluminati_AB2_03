@@ -22,7 +22,7 @@ export default function LoginPage() {
       console.log(email , password);
       
       const res = await axios.post(
-        `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/doctor/login`,
+        `http://localhost:8000/api/doctor/login`,
         { email, password }
       );
       console.log(res)
