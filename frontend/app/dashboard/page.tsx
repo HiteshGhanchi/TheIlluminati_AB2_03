@@ -139,21 +139,31 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if(doctor_id){
-      console.log(doctor_id);
+      // console.log(doctor_id);
       
       axios
         .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/getAllPatients/${doctor_id}`)
         .then((res) => {
           console.log(res);
-          setAllPatientLen(res.data?.data?.count);
+          setAllPatientLen(res.data?.data?.uniquePatientCount);
           setDiagnoses(res.data?.data?.diagnoses);
           setPrescriptions(res.data?.data?.prescription);
           setActive(res.data?.data?.active);
           if(res.data?.data?.cases.length > 0){
             // setPatients(res.data?.data?.cases);
-            setPatients(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
-            console.log(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
-            
+            // setPatients(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
+            console.log(res.data?.data?.cases.map(i => ({name : i.patient_id.name , 
+              last_visit : String(i.patient_id.created_at).substring(0 , 10), 
+              age : i.patient_id.age,
+              sex : i.patient_id.sex,
+              _id: i.patient_id._id
+            })));
+            setPatients( res.data?.data?.cases ? res.data.data.cases.map(i => ({name : i.patient_id.name , 
+              last_visit : String(i.patient_id.created_at).substring(0 , 10), 
+              age : i.patient_id.age,
+              sex : i.patient_id.sex,
+              _id: i.patient_id._id
+            })) : [])
           }
         })
         .catch((err) => {
@@ -388,25 +398,22 @@ export default function DashboardPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="px-4 py-2 text-left">Patient ID</th>
                     <th className="px-4 py-2 text-left">Name</th>
                     <th className="px-4 py-2 text-left">Age</th>
                     <th className="px-4 py-2 text-left">Last Visit</th>
-                    <th className="px-4 py-2 text-left">Ongoing Cases</th>
+                    <th className="px-4 py-2 text-left">Sex</th>
                   </tr>
                 </thead>
                 <tbody>
                   {patients.map((patient) => (
-                    <tr
-                      key={patient.id}
+                    <tr key={patient.name}
                       className="border-b cursor-pointer hover:bg-gray-100"
-                      onClick={() => handlePatientClick(patient.id)}
+                      onClick={() => handlePatientClick(patient._id)}
                     >
-                      <td className="px-4 py-2">{patient.id}</td>
                       <td className="px-4 py-2">{patient.name}</td>
                       <td className="px-4 py-2">{patient.age}</td>
-                      <td className="px-4 py-2">{patient.lastVisit}</td>
-                      <td className="px-4 py-2">{patient.ongoingCases}</td>
+                      <td className="px-4 py-2">{patient.last_visit}</td>
+                      <td className="px-4 py-2">{patient.sex}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -3,8 +3,9 @@ const {buildPDF} = require("../middleware/pdf_service")
 const downloadPdf = (req , res) =>{
     
     const {
-        body :{ info : text}
+        body:{ info : text}
     } = req
+    console.log(req.params);
     
     const stream = res.writeHead(200, {
         'Content-Type' : "application/pdf",

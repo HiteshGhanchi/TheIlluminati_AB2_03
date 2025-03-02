@@ -3,7 +3,7 @@ const textPdfRouter = require("./router/text_pdf")
 
 const dotenv = require('dotenv')
 dotenv.config()
-
+const prescriptionRouter = require("./router/prescription_router")
 const patientRouter = require('./router/patient.router')
 const caseRouter = require('./router/case.router')
 const doctorRouter = require('./router/doctor.router')
@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 
 app.use("/api/v1" , mailRouter)
 app.use("/api/v1" , textPdfRouter)
-// app.use("/api/v1" , dummyPrescriptionRoute)
+app.use("/api/v1/prescription" , prescriptionRouter)
 app.use('/api/patient',patientRouter)
 app.use('/api/cases',caseRouter)
 app.use('/api/doctor',doctorRouter)

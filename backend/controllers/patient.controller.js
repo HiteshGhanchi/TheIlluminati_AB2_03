@@ -62,14 +62,17 @@ const deletePatient = async (req , res) => {
     }
 }
 
-const getAllPatients = async (req , res) => {
+const getAllPatients = async (req, res) => {
     try {
         const doctor_id = req.params.doctor_id;
     
         const all_cases = await Case.find({ doctor_id }).populate("patient_id");
 
-    
-        const active_length = all_cases.filter((caseItem) => caseItem?.status === "ongoing").length;
+        // Count unique patients
+        const uniquePatients = new Set(all_cases.map(caseItem => caseItem.patient_id._id.toString()));
+        const uniquePatientCount = uniquePatients.size;
+
+        const active_length = all_cases.filter(caseItem => caseItem?.status === "ongoing").length;
     
         // Fetch all prescriptions and get their count properly
         const all_prescriptions = await Prescription.find({ doctor_id });
@@ -84,6 +87,7 @@ const getAllPatients = async (req , res) => {
             data: {
                 cases: all_cases,
                 count: all_cases.length,
+                uniquePatientCount, // ✅ Added unique patient count
                 active: active_length,
                 prescription: prescription_count,
                 diagnosis: diagnosis_count,
@@ -92,11 +96,24 @@ const getAllPatients = async (req , res) => {
     } catch (err) {
         return res.status(500).json({ status: false, message: err.message });
     }
+};
+
+const getSinglePatient = async(req , res) => {
+    const {id} = req.params
+    if(!id){
+        return res.status(404).json({message : "Id not found"})
+    }
+    const patient = await Patient.findOne({_id : id})
+    if(!patient){
+        return res.status(404).json({message : "Invalid ID"})
+    }
+    return res.status(200).json({data : patient , status : true})
 }
 
 module.exports = {
     getPatient,
     addPatient,
     deletePatient,
-    getAllPatients
+    getAllPatients,
+    getSinglePatient
 }
