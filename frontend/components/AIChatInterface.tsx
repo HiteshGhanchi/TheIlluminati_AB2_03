@@ -20,7 +20,7 @@ type Message = {
 type Case = {
   id: string;
   diagnosis: string;
-  lastUpdate: Date;
+  lastUpdate: Date | 'string';
   status: "ongoing" | "resolved";
 };
 
@@ -84,6 +84,8 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
     }
   };
 
+
+
   useEffect(() => {
     // Fetch cases for the patient
     const sendReq = async () => {
@@ -112,6 +114,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
 
   useEffect(() => {
     if (!selectedCase) return;
+    // window.location.reload()
 
     socket.emit("joinRoom", selectedCase);
 
@@ -133,61 +136,94 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
-      // Get doctor_id from localStorage
-      const doctorId = localStorage.getItem("doctor_id");  // Ensure you store doctor_id in localStorage
-
+      const doctorId = localStorage.getItem("doctor_id");
+      
       if (!doctorId) {
         console.error("❌ Doctor ID not found in localStorage");
         return;
       }
       
-
-      // Construct the new message
-      const newMessage: Message = {
-        id: new Date().toISOString(),  // Generate a unique message ID based on the current timestamp
+      // Check if we're in a temporary case that hasn't been saved yet
+      const isTemporaryCase = selectedCase && selectedCase.startsWith('temp-');
+      
+      // Temporarily add message to UI for immediate feedback
+      const newMessage = {
+        id: Date.now().toString(),
         sender: "Doctor",
         content: inputMessage,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
-
-  
-      // Update messages state with the new message
-      setMessages((prev) => [...prev, newMessage]);
-
-      // Emit the message along with relevant information to the backend
-      socket.emit("sendMessage", {
-        caseId: selectedCase,       // Pass selected case ID
-        patientId: patientId,       // Pass patient ID
-        sender: "Doctor",           // Sender as Doctor
-        message: inputMessage,      // Message content
-        doctorId: doctorId,         // Pass doctor ID
-      });
-
-      // Clear the input field after sending the message
+      
+      setMessages(prev => [...prev, newMessage]);
+      
+      // Emit the message to the server
+      socket.emit(
+        "sendMessage",
+        {
+          caseId: isTemporaryCase ? null : selectedCase, // If temporary, send null to create new case
+          patientId,
+          doctorId,
+          sender: "Doctor",
+          message: inputMessage
+        },
+        (response) => {
+          if (response.success) {
+            // If this was a temporary case, update the real case ID
+            if (isTemporaryCase) {
+              const realCaseId = response.caseId;
+              
+              // Update cases list - replace temp ID with real one
+              setCases(prev => prev.map(c => 
+                c._id === selectedCase ? {...c, _id: realCaseId} : c
+              ));
+              
+              // Update selected case
+              setSelectedCase(realCaseId);
+            }
+          } else {
+            console.error("Failed to send message:", response.error);
+          }
+        }
+      );
+      
       setInputMessage("");
     }
-};
-
-  const handleStartNewCase = () => {
-    const newCaseId = `C${(cases.length + 1).toString().padStart(3, "0")}`;
-    const newCase: Case = {
-      id: newCaseId,
-      diagnosis: "New Case",
-      lastUpdate: new Date('2025-03-02T12:30:00Z'),
-      status: "ongoing",
-    };
-    setCases((prev) => [...prev, newCase]);
-    setSelectedCase(newCaseId);
-    setMessages([
-      {
-        id: "new-case",
-        sender: "Bot",
-        content: "A new case has been started. What symptoms or concerns would you like to discuss for this patient?",
-        timestamp: new Date('2025-03-02T12:30:00Z'), // Initial timestamp
-      },
-    ]);
   };
 
+const handleStartNewCase = () => {
+  // Generate a temporary ID just for the UI
+  const tempId = `temp-${Date.now()}`;
+  
+  // Create a temporary case object for the UI
+  const newCase = {
+    _id: tempId, // This is just a temporary ID for the UI
+    status: "ongoing",
+    created_at: new Date().toISOString()
+  };
+  
+  // Add to cases list in the UI
+  setCases(prev => [...prev, newCase]);
+  
+  // Select the new case
+  setSelectedCase(tempId);
+  
+  // Clear messages - show an empty chat
+  setMessages([
+    {
+      id: "welcome",
+      sender: "Bot",
+      content:
+        "Hello, I'm your AI assistant. How can I help you today? You can ask me about:\n\n" +
+        "• Patient symptoms and possible diagnoses\n" +
+        "• Treatment recommendations\n" +
+        "• Drug interactions and side effects\n" +
+        "• Recent medical research related to the patient's condition\n" +
+        "• Interpretation of lab results\n\n" +
+        "What would you like to discuss regarding this patient?",
+      timestamp: new Date('2025-03-02T12:30:00Z'), // Initial timestamp, but it will be overwritten by the backend timestamp
+    },
+  ]);
+};
  
 
   const handleSummarize = () => {
@@ -225,7 +261,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
                 <CardTitle className="text-sm font-medium">
                   {caseItem._id}
                 </CardTitle>
-                <p className="text-xs text-gray-500">{caseItem?.created_at.split("T")[0]}</p>
+                <p className="text-xs text-gray-500">{caseItem?.created_at?.split("T")[0]}</p>
                 <Badge variant={caseItem.status === "ongoing" ? "default" : "secondary"}>{caseItem.status}</Badge>
               </CardHeader>
             </Card>
