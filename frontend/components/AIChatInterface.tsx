@@ -84,6 +84,8 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
     }
   };
 
+
+
   useEffect(() => {
     // Fetch cases for the patient
     const sendReq = async () => {
@@ -112,6 +114,7 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
 
   useEffect(() => {
     if (!selectedCase) return;
+    // window.location.reload()
 
     socket.emit("joinRoom", selectedCase);
 
