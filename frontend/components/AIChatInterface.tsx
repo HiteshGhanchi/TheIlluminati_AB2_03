@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ReactMarkdown from 'react-markdown'
 import axios from "axios";
 
 type Message = {
@@ -295,8 +296,26 @@ const handleStartNewCase = () => {
                   message.sender === "Doctor" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
                 }`} 
               >
-                {message.content}
-                {/* <div className="text-xs text-gray-500 mt-2">{message}</div> */}
+              {message.sender === "Doctor" ? (
+                  // For doctor messages, use a simple <p> tag with whitespace preservation
+                  <p className="whitespace-pre-wrap">{message.content}</p>
+                ) : (
+                  // For bot messages, use ReactMarkdown to render Markdown content
+                  <ReactMarkdown
+                    components={{
+                      // Customize Markdown rendering styles
+                      p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                      ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2" {...props} />,
+                      li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                      strong: ({ node, ...props }) => <strong className="font-bold" {...props} />,
+                      em: ({ node, ...props }) => <em className="italic" {...props} />,
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                )}
+                <div className="text-xs text-white-500 mt-2">{new Date(message.timestamp).toLocaleString()}</div>
               </div>
             </div>
           ))}
