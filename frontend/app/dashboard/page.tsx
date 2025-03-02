@@ -62,15 +62,13 @@ export default function DashboardPage() {
   ]
 
   const [patients , setPatients] = useState([
-    { id: "P001", name: "Amit Khanna", age: 45, lastVisit: "2024-05-15", ongoingCases: 2 },
-    { id: "P002", name: "Pooja Mehta", age: 32, lastVisit: "2024-06-01", ongoingCases: 1 },
-    { id: "P003", name: "Rahul Sharma", age: 58, lastVisit: "2024-05-28", ongoingCases: 3 },
+    { id: "67c325274b854f514b39eef1", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
+    { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
+    { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
   ])
 
   const filteredPatients = patients.filter(
-    (patient) =>
-      patient.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    (patient) => patient.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const handlePatientClick = (patientId: string) => {
@@ -117,6 +115,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const storedDoctorId = localStorage.getItem("doctor_id");
+    console.log(storedDoctorId);
+    
     if (storedDoctorId) {
       setDocId(storedDoctorId);
     }
@@ -140,16 +140,21 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if(doctor_id){
+      console.log(doctor_id);
+      
       axios
         .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/getAllPatients/${doctor_id}`)
         .then((res) => {
-          console.log(res.data);
+          console.log(res);
           setAllPatientLen(res.data?.data?.count);
           setDiagnoses(res.data?.data?.diagnoses);
           setPrescriptions(res.data?.data?.prescription);
           setActive(res.data?.data?.active);
           if(res.data?.data?.cases.length > 0){
-            setPatients(res.data?.data?.cases);
+            // setPatients(res.data?.data?.cases);
+            setPatients(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
+            console.log(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
+            
           }
         })
         .catch((err) => {
@@ -392,7 +397,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredPatients.map((patient) => (
+                  {patients.map((patient) => (
                     <tr
                       key={patient.id}
                       className="border-b cursor-pointer hover:bg-gray-100"

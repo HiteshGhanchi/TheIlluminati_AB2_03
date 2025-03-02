@@ -19,7 +19,8 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-
+      console.log(email , password);
+      
       const res = await axios.post(
         `http://localhost:8000/api/doctor/login`,
         { email, password }
