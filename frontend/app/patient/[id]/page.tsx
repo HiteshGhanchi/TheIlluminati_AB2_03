@@ -360,7 +360,6 @@ export default function PatientProfilePage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Case ID</TableHead>
-                        <TableHead>Diagnosis</TableHead>
                         <TableHead>Last Update</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
@@ -369,7 +368,6 @@ export default function PatientProfilePage() {
                       {caseHistory.map((caseItem) => (
                         <TableRow key={caseItem._id}>
                           <TableCell>{caseItem._id}</TableCell>
-                          <TableCell>{caseItem.diagnosis}</TableCell>
                           <TableCell>
                             {String(caseItem.created_at).substring(0, 10)}
                           </TableCell>

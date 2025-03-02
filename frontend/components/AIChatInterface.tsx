@@ -201,6 +201,8 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
           "Further discussion of treatment guidelines was offered.",
       );
     }, 1000);
+
+    // https://4238-2405-201-27-e843-4804-28b1-e233-734b.ngrok-free.app/
   };
 
   return (
