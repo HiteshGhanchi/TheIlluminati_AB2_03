@@ -1,6 +1,7 @@
 "use client"
 
-require("dotenv").config
+// require("dotenv").config
+
 import { useState , useEffect } from "react"
 import { Bell, Search, Users, FileText, Pill, MessageSquare, Plus } from "lucide-react"
 import axios from "axios";
@@ -56,14 +57,14 @@ export default function DashboardPage() {
 
   const notifications = [
     { type: "New", message: "New research paper on diabetes treatment" },
-    { type: "Urgent", message: "Critical update for patient John Doe" },
+    { type: "Urgent", message: "Critical update for patient Amit Khanna" },
     { type: "Reminder", message: "Follow-up with Jane Smith scheduled" },
   ]
 
   const [patients , setPatients] = useState([
-    { id: "P001", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
-    { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
-    { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
+    { id: "P001", name: "Amit Khanna", age: 45, lastVisit: "2024-05-15", ongoingCases: 2 },
+    { id: "P002", name: "Pooja Mehta", age: 32, lastVisit: "2024-06-01", ongoingCases: 1 },
+    { id: "P003", name: "Rahul Sharma", age: 58, lastVisit: "2024-05-28", ongoingCases: 3 },
   ])
 
   const filteredPatients = patients.filter(

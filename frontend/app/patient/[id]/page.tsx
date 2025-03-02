@@ -24,7 +24,7 @@ export default function PatientProfilePage() {
   // Mock patient data
   const patient = {
     id: id,
-    name: "John Doe",
+    name: "Rahul Sharma",
     age: 45,
     gender: "Male",
     bloodGroup: "A+",
@@ -35,8 +35,8 @@ export default function PatientProfilePage() {
     weight: "80 kg",
     bmi: "26.1",
     occupation: "Teacher",
-    emergencyContact: "Jane Doe (Wife) - +1 234 567 8901",
-    primaryCarePhysician: "Dr. Sarah Johnson",
+    emergencyContact: "Deepti Sharma (Wife) - +1 234 567 8901",
+    primaryCarePhysician: "Dr. Niti Patel",
     insuranceProvider: "HealthGuard Insurance",
     policyNumber: "HG123456789",
     lastLabWork: "2023-05-15",
@@ -306,4 +306,3 @@ export default function PatientProfilePage() {
     </div>
   )
 }
-
