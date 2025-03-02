@@ -67,7 +67,7 @@ module.exports = (io) => {
                 // **7. If Doctor sends a message, get AI response**
                 if (sender === "Doctor") {
                     console.log(`🤖 Sending to AI: "${message}"`);
-                    const flaskAPI = "https://3311-2405-201-27-e843-4804-28b1-e233-734b.ngrok-free.app/chat";
+                    const flaskAPI = process.env.AI_API;
 
                     try {
                         const { data } = await axios.post(flaskAPI, { input: message , session_id: caseId });
