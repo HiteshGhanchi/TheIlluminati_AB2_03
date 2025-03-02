@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import jsPDF from "jspdf"
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MessageSquare, Download, Mail, Plus } from "lucide-react";
@@ -537,7 +537,7 @@ export default function PatientProfilePage() {
                           <TableCell>{prescription.notes}</TableCell>
                           <TableCell>{prescription.case_id}</TableCell>
                           <TableCell>
-                            <Button onClick={() => handleDownload(prescription)} variant="ghost" size="sm">
+                            <Button onClick={() => handleDownloadPrescription(prescription)} variant="ghost" size="sm">
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>

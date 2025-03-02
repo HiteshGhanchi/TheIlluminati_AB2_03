@@ -1,5 +1,6 @@
 const Case = require("../modules/cases.module");
 const Chat = require("../modules/chat.module");
+const Patient = require("../modules/patient.module");
 
 const getCases = async (req , res) => {
     try {
@@ -42,10 +43,39 @@ const startCase =  async (req, res) => {
     }
 }
 
+const addCase = async (req, res) => {
+  const { patient_id  , password , doctor_id} = req.body;
+  try{
+    const patient = await Patient.findOne({_id: patient_id});
+
+    if(!patient){
+        return res.status(400).json({status: false , message: "Patient not found"});
+    }
+
+    if(patient.password !== password){
+        return res.status(401).json({status: false , message: "Invalid password"});
+    }
+
+    const newCase = new Case({patient_id , doctor_id});
+    await newCase.save();
+    
+    const newChat = new Chat({ _id: newCase._id, messages: [] });
+    await newChat.save();
+
+    const newCaseWithPatient = await newCase.populate("patient_id");
+
+    return res.status(200).json({status: true , data: newCaseWithPatient});
+  }
+  catch(err){
+    return res.status(500).json({status: false , message: err.message});
+  }
+}
+
 
 module.exports = {
     getCases,
     getCase,
-    startCase
+    startCase,
+    addCase
 
 };

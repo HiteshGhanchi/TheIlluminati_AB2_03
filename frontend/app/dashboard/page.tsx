@@ -40,6 +40,9 @@ export default function DashboardPage() {
   const [diagnoses , setDiagnoses] = useState(0)
   const [prescriptions , setPrescriptions] = useState(0)
   const [active , setActive] = useState(0)
+
+  const [patient_id , setPatientId] = useState("")
+  const [password , setPassword] = useState("")
   
 
   //Add Patient use states
@@ -62,9 +65,10 @@ export default function DashboardPage() {
   ]
 
   const [patients , setPatients] = useState([
-    { id: "67c325274b854f514b39eef1", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
-    { id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
-    { id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
+  //   { _id: "67c325274b854f514b39eef1", name: "John Doe", age: 45, lastVisit: "2023-05-15", ongoingCases: 2 },
+  //   { _id: "P002", name: "Jane Smith", age: 32, lastVisit: "2023-06-01", ongoingCases: 1 },
+  //   { _id: "P003", name: "Bob Johnson", age: 58, lastVisit: "2023-05-28", ongoingCases: 3 },
+  // 
   ])
 
   const filteredPatients = patients.filter(
@@ -88,6 +92,20 @@ export default function DashboardPage() {
     }
   };
 
+  const handlePatientSubmit = async () => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/cases/${patient_id}`, {
+        patient_id: patient_id,
+        password,
+        doctor_id
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding patient", error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     // e.preventDefault();
     console.log(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/`);
@@ -107,6 +125,17 @@ export default function DashboardPage() {
       })
 
       console.log(res);
+
+      // setPatientId(res.data?.data?._id)
+      // setPassword(res.data?.data?.password)
+      // const res2  = await handlePatientSubmit()
+
+      // console.log(res2);
+
+      // setPatientId("")
+      // setPassword("")
+
+
       
     }catch(e){
       console.log(e);
@@ -145,7 +174,7 @@ export default function DashboardPage() {
       axios
         .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/patient/getAllPatients/${doctor_id}`)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           setAllPatientLen(res.data?.data?.uniquePatientCount);
           setDiagnoses(res.data?.data?.diagnoses);
           setPrescriptions(res.data?.data?.prescription);
@@ -153,18 +182,48 @@ export default function DashboardPage() {
           if(res.data?.data?.cases.length > 0){
             // setPatients(res.data?.data?.cases);
             // setPatients(res.data?.data?.cases.map(i => [{name : i.patient_id.name , id : i.patient_id.aadhar_id, age : i.patient_id.age}]));
-            console.log(res.data?.data?.cases.map(i => ({name : i.patient_id.name , 
-              last_visit : String(i.patient_id.created_at).substring(0 , 10), 
-              age : i.patient_id.age,
-              sex : i.patient_id.sex,
-              _id: i.patient_id._id
-            })));
-            setPatients( res.data?.data?.cases ? res.data.data.cases.map(i => ({name : i.patient_id.name , 
-              last_visit : String(i.patient_id.created_at).substring(0 , 10), 
-              age : i.patient_id.age,
-              sex : i.patient_id.sex,
-              _id: i.patient_id._id
-            })) : [])
+            // console.log(res.data?.data?.cases.map(i => ({name : i.patient_id.name , 
+            //   last_visit : String(i.patient_id.created_at).substring(0 , 10), 
+            //   age : i.patient_id.age,
+            //   sex : i.patient_id.sex,
+            //   _id: i.patient_id._id
+            // })));
+
+
+            setPatients((prevPatients) => { 
+              console.log(res.data?.data?.cases)
+
+              const newPatients = res.data?.data?.cases
+                ? res.data.data.cases.map(i => ({
+                    // console.log(i);
+                    name: i.patient_id.name,
+                    // last_visit: String(i.patient_id.last_visit).substring(0, 10),
+                    age: i.patient_id.age,
+                    sex: i.patient_id.sex,
+                    _id: i.patient_id._id,
+                    phone: i.patient_id.phone,  
+                    ongoingCases: 1 // Each case contributes one to the count
+                  }))
+                : [];
+
+              
+            
+              // Merge with existing patients, updating ongoingCases count
+              const patientMap = new Map();
+            
+              [...prevPatients, ...newPatients].forEach((p) => {
+                if (patientMap.has(p._id)) {
+                  patientMap.get(p._id).ongoingCases += 1;
+                } else {
+                  patientMap.set(p._id, { ...p, ongoingCases: 1 });
+                }
+              });
+              console.log(Array.from(patientMap.values()));
+              return Array.from(patientMap.values());
+            });            
+
+
+
           }
         })
         .catch((err) => {
@@ -241,7 +300,7 @@ export default function DashboardPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="aadhar" className="text-right">
-                    Aadhar
+                    Id
                   </label>
                   <Input id="aadhar" className="col-span-3" onChange={(e) => setAadhaar(e.currentTarget.value)}/>
                 </div>
@@ -390,7 +449,38 @@ export default function DashboardPage() {
         </div>
 
         {/* Active Patient Cases */}
-        <Card className="mb-8">
+
+        <Dialog>
+            <DialogTrigger asChild>
+              <Button className="ml-4">
+                <Plus className="mr-2 h-4 w-4" /> Add Patient
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Patient</DialogTitle>
+                <DialogDescription>Enter the id and password of exisiting patient.</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="id" className="text-right">
+                    Aadhar
+                  </label>
+                  <Input id="id" className="col-span-3" onChange={(e) => setPatientId(e.currentTarget.value)}/>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4" >
+                  <label htmlFor="password" className="text-right">
+                    Password
+                  </label>
+                  <Input id="name" className="col-span-3" onChange={(e)=> setPassword(e.currentTarget.value)}/>
+                </div>
+              </div>
+              <Button onClick={handlePatientSubmit} type="submit">Add Patient</Button>
+            </DialogContent>
+          </Dialog>
+
+        
+        <Card className="mb-8 mt-8">
           <CardHeader>
             <CardTitle>Active Patient Cases</CardTitle>
           </CardHeader>
@@ -403,18 +493,23 @@ export default function DashboardPage() {
                     <th className="px-4 py-2 text-left">Age</th>
                     <th className="px-4 py-2 text-left">Last Visit</th>
                     <th className="px-4 py-2 text-left">Sex</th>
+                    <th className="px-4 py-2 text-left">Ongoing Cases</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {patients.map((patient) => (
+                  {filteredPatients.map((patient) => (
                     <tr key={patient.name}
                       className="border-b cursor-pointer hover:bg-gray-100"
                       onClick={() => handlePatientClick(patient._id)}
                     >
                       <td className="px-4 py-2">{patient.name}</td>
                       <td className="px-4 py-2">{patient.age}</td>
-                      <td className="px-4 py-2">{patient.last_visit}</td>
+                      {/* <td className="px-4 py-2">{patient.last_visit}</td> */}
+                      <td className="px-4 py-2">{patient.phone}</td>
+          
                       <td className="px-4 py-2">{patient.sex}</td>
+                      <td className="px-4 py-2">{patient.ongoingCases}</td>
+
                     </tr>
                   ))}
                 </tbody>

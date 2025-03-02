@@ -28,6 +28,7 @@ const addPatient = async (req , res) => {
     try{
         const { aadhar_id , ...rest} = req.body;
         // console.log("In addPatient!!");
+        console.log(aadhar_id)
         
         const patient = await Patient.findOne({aadhar_id: aadhar_id});
 
@@ -38,9 +39,10 @@ const addPatient = async (req , res) => {
         const password = Math.random().toString(36).slice(2);
         rest.password = password;
         rest.aadhar_id = aadhar_id;
-
-        const newPatient = new Patient(rest);
-        await newPatient.save();
+        
+        const newPatient = await Patient.create(rest);
+        
+        // console.log(newPatient);
         return res.status(200).json({status: true , data: newPatient});
     }
     catch(err){
