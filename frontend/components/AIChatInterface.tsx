@@ -51,7 +51,12 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
   const [inputMessage, setInputMessage] = useState("");
   const [summary, setSummary] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const socket = io(`http://localhost:${process.env.NEXT_PUBLIC_PORT}`, { transports: ["websocket"] });
+ 
+
+
+ 
+
+
   const handleSelectCase = async (caseId: string) => {
     setSelectedCase(caseId);
     
@@ -115,6 +120,11 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
   useEffect(() => {
     if (!selectedCase) return;
     // window.location.reload()
+    const socket = io(`http://localhost:8000`, { 
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
 
     socket.emit("joinRoom", selectedCase);
 
@@ -135,6 +145,13 @@ export default function AIChatInterface({ patientId, initialCaseId, onClose }: A
   }, [selectedCase]);
 
   const handleSendMessage = () => {
+
+    const socket = io(`http://localhost:8000`, { 
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+
     if (inputMessage.trim()) {
       const doctorId = localStorage.getItem("doctor_id");
       
