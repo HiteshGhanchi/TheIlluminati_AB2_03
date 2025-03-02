@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import jsPDF from "jspdf"
+import jsPDF from "jspdf";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MessageSquare, Download, Mail, Plus } from "lucide-react";

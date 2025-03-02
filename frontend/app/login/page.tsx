@@ -80,7 +80,7 @@ export default function LoginPage() {
               <Input id="password" type="password" required  value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
             <Button type="submit" className="w-full">
-              Sign In
+              Log in
               <Lock className="ml-2 h-4 w-4" />
             </Button>
           </form>
