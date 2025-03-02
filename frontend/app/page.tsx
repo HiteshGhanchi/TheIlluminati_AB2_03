@@ -179,7 +179,7 @@ export default function HealthcareLanding() {
               </div>
             </div>
 
-            <div className="pt-8">
+            {/* <div className="pt-8">
               <h3 className="text-center text-2xl font-bold mb-8">Interactive Walkthrough</h3>
               <Carousel className="mx-auto max-w-5xl">
                 <CarouselContent>
@@ -228,9 +228,91 @@ export default function HealthcareLanding() {
                   <CarouselNext />
                 </div>
               </Carousel>
-            </div>
+            </div> */}
           </div>
         </section>
+        {/*Walthrough*/}
+        <section
+        id="demo"
+        className="bg-gradient-to-b from-white to-blue-50 dark:from-gray-800 dark:to-gray-900 py-16 md:py-24"
+      >
+        <div className="container space-y-12">
+          <div className="text-center space-y-4">
+            <Badge className="bg-primary/10 text-primary hover:bg-primary/20">Interactive Walkthrough</Badge>
+            <h2 className="text-3xl font-bold md:text-4xl">Experience DocGPT in Action</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Follow our step-by-step guide to see how DocGPT streamlines your medical practice.
+            </p>
+          </div>
+
+          <Carousel className="mx-auto max-w-5xl">
+            <CarouselContent>
+              {[
+                {
+                  title: "Secure Login",
+                  description: "Start by securely logging into your DocGPT account with your credentials.",
+                  imageSrc: "/demo1.png?height=300&width=400&text=Login+Screen",
+                },
+                {
+                  title: "Doctor Dashboard",
+                  description:
+                    "Access your personalized dashboard showing key metrics, recent patients, and upcoming appointments.",
+                  imageSrc: "/demo2.png?height=300&width=400&text=Doctor+Dashboard",
+                },
+                {
+                  title: "Add New Patient",
+                  description: "Easily add a new patient by entering their basic information and medical history.",
+                  imageSrc: "/demo3.png?height=300&width=400&text=Add+New+Patient",
+                },
+                {
+                  title: "Patient Profile",
+                  description:
+                    "Access comprehensive patient details including medical history, previous visits, and current medications.",
+                  imageSrc: "/demo4.png?height=300&width=400&text=Patient+Profile",
+                },
+                {
+                  title: "Add Prescription",
+                  description:
+                    "Create new prescriptions for patients, with built-in drug interaction checks for safety.",
+                  imageSrc: "/demo5.png?height=300&width=400&text=Add+Prescription",
+                },
+
+                {
+                  title: "Open AI Chat Assistant",
+                  description: "Access our AI-powered chat assistant for instant medical insights and second opinions.\nReceive evidence-based diagnostic and treatment suggestions from our advanced AI system.",
+                  imageSrc: "/demo6.png?height=300&width=400&text=AI+Chat+Assistant",
+                },
+              ].map((step, index) => (
+                <CarouselItem key={index}>
+                  <Card className="border-0 shadow-none">
+                    <CardContent className="flex flex-col md:flex-row gap-6 p-6">
+                      <div className="flex-1 flex items-center justify-center">
+                        <Image
+                          src={step.imageSrc}
+                          width={400}
+                          height={300}
+                          alt={`Step ${index + 1}: ${step.title}`}
+                          className="rounded-lg shadow-md"
+                        />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center space-y-4">
+                        <Badge className="w-fit">Step {index + 1}</Badge>
+                        <h4 className="text-xl font-bold">{step.title}</h4>
+                        <p className="text-muted-foreground">{step.description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center gap-2 mt-4">
+              <CarouselPrevious />
+              <CarouselNext />
+            </div>
+          </Carousel>
+        </div>
+      </section>
+
 
         {/* Testimonials */}
         <section id="testimonials" className="py-16 md:py-24">

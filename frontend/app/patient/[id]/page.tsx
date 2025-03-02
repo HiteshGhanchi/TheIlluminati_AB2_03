@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import jsPDF from "jspdf"
+import jsPDF from "jspdf";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MessageSquare, Download, Mail, Plus } from "lucide-react";
@@ -506,6 +506,7 @@ export default function PatientProfilePage() {
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>
+               
                             <Button variant="ghost" size="sm">
                               <Mail className="mr-2 h-4 w-4" />
                               Email
