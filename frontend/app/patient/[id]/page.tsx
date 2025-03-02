@@ -57,29 +57,65 @@ export default function PatientProfilePage() {
 
   const handleDownload = async (prescription) => {
     console.log("Download button clicked");
+    try {
+        // Construct structured HTML content
+        const htmlContent = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+                <h1 style="color: #007BFF;">Prescription</h1>
+                <hr>
+                <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <tr style="background-color: #f2f2f2;">
+                        <th>Doctor ID</th>
+                        <th>Case ID</th>
+                        <th>Prescription Name</th>
+                        <th>Dosage</th>
+                    </tr>
+                    ${prescription.medicines.map(med => `
+                        <tr>
+                            <td>${prescription.doctor_id || "N/A"}</td>
+                            <td>${prescription.case_id || "N/A"}</td>
+                            <td>${med.name || "No name provided"}</td>
+                            <td>${med.dosage || "No dosage provided"}</td>
+                        </tr>
+                    `).join("")}
+                </table>
+                <br>
+                <h3 style="color: #FF5733;">Notes</h3>
+                <p>${prescription.notes || "No additional notes provided"}</p>
+            </div>
+        `;
+
+        const res = await axios.post(
+            `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/text_pdf`,
+            { info: htmlContent },
+            { responseType: "blob" } // Ensures binary response
+        );
+
+        console.log(res);
+
+        // Convert response into a Blob
+        const blob = new Blob([res.data], { type: "application/pdf" });
+        const link = document.createElement("a");
+
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute("download", "prescription.pdf");
+
+        // Append to body, trigger click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+  const handlePdfEmail = async (prescription) => {
     try{
-
-      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/text_pdf` , {
-        info : `<h1> ${prescription.medicines[0].name || "HMPV Vaccine"}</h1> 
-        <br> <h2> ${prescription.medicines[0].dosage}</h2>`
-        
-      },
-      {
-        responseType: "blob", // Ensures binary response
-    })
+      console.log(prescription.case_id);
+      
+      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/send_mail/${prescription.case_id}` )
       console.log(res);
-
-      // Convert response into a Blob
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      const link = document.createElement("a");
-
-      link.href = window.URL.createObjectURL(blob);
-      link.setAttribute("download", "prescription.pdf");
-
-      // Append to body, trigger click, and remove
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
       
     }catch(e){
       console.log(e);
@@ -505,7 +541,7 @@ export default function PatientProfilePage() {
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button onClick={() => handlePdfEmail(prescription)} variant="ghost" size="sm">
                               <Mail className="mr-2 h-4 w-4" />
                               Email
                             </Button>
