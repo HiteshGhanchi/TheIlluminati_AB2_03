@@ -537,7 +537,7 @@ export default function PatientProfilePage() {
                           <TableCell>{prescription.notes}</TableCell>
                           <TableCell>{prescription.case_id}</TableCell>
                           <TableCell>
-                            <Button onClick={() => handleDownloadPrescription(prescription)} variant="ghost" size="sm">
+                            <Button onClick={() => handleDownload(prescription)} variant="ghost" size="sm">
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>
