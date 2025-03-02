@@ -55,36 +55,71 @@ export default function PatientProfilePage() {
     familyHistory: "Father: Hypertension, Mother: Type 2 Diabetes",
   });
 
-  const handleDownloadPrescription = (prescription) => {
-    const doc = new jsPDF()
+  const handleDownload = async (prescription) => {
+    console.log("Download button clicked");
+    try {
+        // Construct structured HTML content
+        const htmlContent = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
+                <h1 style="color: #007BFF;">Prescription</h1>
+                <hr>
+                <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <tr style="background-color: #f2f2f2;">
+                        <th>Doctor ID</th>
+                        <th>Case ID</th>
+                        <th>Prescription Name</th>
+                        <th>Dosage</th>
+                    </tr>
+                    ${prescription.medicines.map(med => `
+                        <tr>
+                            <td>${prescription.doctor_id || "N/A"}</td>
+                            <td>${prescription.case_id || "N/A"}</td>
+                            <td>${med.name || "No name provided"}</td>
+                            <td>${med.dosage || "No dosage provided"}</td>
+                        </tr>
+                    `).join("")}
+                </table>
+                <br>
+                <h3 style="color: #FF5733;">Notes</h3>
+                <p>${prescription.notes || "No additional notes provided"}</p>
+            </div>
+        `;
 
-    // Add content to the PDF
-    doc.setFontSize(18)
-    doc.text("Prescription", 105, 15, { align: "center" })
+        const res = await axios.post(
+            `http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/text_pdf`,
+            { info: htmlContent },
+            { responseType: "blob" } // Ensures binary response
+        );
 
-    doc.setFontSize(12)
-    doc.text(`Patient: ${patient.name}`, 20, 30)
-    doc.text(`Patient ID: ${patient.id}`, 20, 40)
-    doc.text(`Date: ${prescription.date}`, 20, 50)
-    doc.text(`Prescription ID: ${prescription.id}`, 20, 60)
+        console.log(res);
 
-    doc.setFontSize(14)
-    doc.text("Medicines:", 20, 75)
-    doc.setFontSize(12)
-    doc.text(prescription.medicines, 30, 85)
+        // Convert response into a Blob
+        const blob = new Blob([res.data], { type: "application/pdf" });
+        const link = document.createElement("a");
 
-    doc.setFontSize(14)
-    doc.text("Dosage:", 20, 100)
-    doc.setFontSize(12)
-    doc.text(prescription.dosage, 30, 110)
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute("download", "prescription.pdf");
 
-    doc.setFontSize(14)
-    doc.text("Notes:", 20, 125)
-    doc.setFontSize(12)
-    doc.text(prescription.notes, 30, 135)
+        // Append to body, trigger click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-    // Save the PDF
-    doc.save(`prescription_${prescription.id}.pdf`)
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+  const handlePdfEmail = async (prescription) => {
+    try{
+      console.log(prescription.case_id);
+      
+      const res = await axios.post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/api/v1/send_mail/${prescription.case_id}` )
+      console.log(res);
+      
+    }catch(e){
+      console.log(e);
+    }
   }
 
   useEffect(() => {
@@ -506,7 +541,7 @@ export default function PatientProfilePage() {
                               <Download className="mr-2 h-4 w-4" />
                               Download
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button onClick={() => handlePdfEmail(prescription)} variant="ghost" size="sm">
                               <Mail className="mr-2 h-4 w-4" />
                               Email
                             </Button>
